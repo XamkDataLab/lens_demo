@@ -414,6 +414,6 @@ if st.button('Fetch Data'):
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-c = cpc_classifications_table(patent_data)
-c = make_cpc(c, 'cpc_ultimate_titles.json')
-st.dataframe(c)
+#c = cpc_classifications_table(patent_data)
+#c = make_cpc(c, 'cpc_ultimate_titles.json')
+#st.dataframe(c)
