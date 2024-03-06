@@ -1,1 +1,4 @@
 
+streamlit==1.10.0  # Adjust version as per your development environment
+pandas==1.4.0  # Adjust version as per your development environment
+requests==2.26.0  # Adjust version as per your development environment
