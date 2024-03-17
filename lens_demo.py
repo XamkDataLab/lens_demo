@@ -51,7 +51,7 @@ if st.button('Hae Data'):
                         #'title': publication['title'],
                         'DOI': None,
                         #'OpenAlex': None,
-                        'Publish date': publication['date_published'],
+                        'Publish date': publication['date_published'].split('T')[0],
                         'PDF URL': None,
                         #'Other URL': None,
                         'Publisher': publication['source'].get('publisher', 'Not available'),  
@@ -74,7 +74,7 @@ if st.button('Hae Data'):
 
                 publications_df = pd.DataFrame(publications_data)
                 publications_df['DOI'] = 'https://doi.org/'+publications_df['DOI']
-                publications_df = publications_df[['DOI', 'PDF URL', 'Publisher', 'Is Open Access']]
+                publications_df = publications_df[['Publish date','DOI', 'PDF URL', 'Publisher', 'Is Open Access']]
                 publications_df['DOI'] = publications_df['DOI'].apply(lambda x: f"[DOI]({x})")
                 publications_df['PDF URL'] = publications_df['PDF URL'].apply(lambda x: f"[PDF]({x})" if x else "")
                 
