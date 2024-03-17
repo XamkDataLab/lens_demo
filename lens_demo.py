@@ -5,6 +5,7 @@ from datanmuokkausfunktiot import *
 
 st.set_page_config(layout="wide")
 st.markdown("<h1 style='text-align: center;'>Datahaku patenteista ja julkaisuista</h1>", unsafe_allow_html=True)
+st.write('Hae painamalla "Hae data" -nappia kuvan alla. Etsii täsmällistä ilmaisua hakusanoista/termeistä')
 
 main_row = st.columns([2, 1, 2]) 
 
@@ -18,7 +19,7 @@ with main_row[1]:
     end_date = st.date_input('Päättyen', value=pd.to_datetime('2024-03-01'))
 
 with main_row[2]:
-    class_cpc_prefix = st.text_input('CPC luokitus (voi jättää tyhjäksi)', '')
+    class_cpc_prefix = st.text_input('CPC-luokitus (patenteille, voi jättää tyhjäksi)', '')
     terms = st.text_area('Hakutermit (erota pilkulla, operaattori OR)', 
                         value='low carbon concrete, sustainable concrete, green concrete, eco concrete', 
                         height=300).split(',')
@@ -46,6 +47,7 @@ if st.button('Hae Data'):
 
                 
                 for publication in publication_data['data']:
+                    source_publisher = publication.get('source', {}).get('publisher', 'Not available') if publication.get('source') else 'Not available'
                     publication_info = {
                         #'lens_id': publication['lens_id'],
                         #'title': publication['title'],
@@ -54,7 +56,7 @@ if st.button('Hae Data'):
                         'Publish date': publication['date_published'].split('T')[0],
                         'PDF URL': None,
                         #'Other URL': None,
-                        'Publisher': publication['source'].get('publisher', 'Not available'),  
+                        'Publisher': source_publisher,  
                         'Is Open Access': publication.get('is_open_access', False)  
                     }
 
