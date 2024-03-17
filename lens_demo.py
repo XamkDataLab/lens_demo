@@ -9,7 +9,7 @@ st.markdown("<h1 style='text-align: center;'>Datahaku patenteista ja julkaisuist
 main_col1, main_col2 = st.columns([2, 3])
 
 with main_col1:
-    image_url = 'https://raw.githubusercontent.com/XamkDataLab/lens_dome/main/DALL.jpg'
+    image_url = 'https://raw.githubusercontent.com/XamkDataLab/lens_demo/main/DALL.jpg'
     st.image(image_url)
 
 with main_col2:
