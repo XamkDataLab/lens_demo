@@ -5,7 +5,6 @@ from datanmuokkausfunktiot import *
 
 st.set_page_config(layout="wide")
 st.markdown("<h1 style='text-align: center;'>Datahaku patenteista ja julkaisuista</h1>", unsafe_allow_html=True)
-st.write('Hae painamalla "Hae data" -nappia kuvan alla. Etsii täsmällistä ilmaisua hakusanoista/termeistä')
 
 main_row = st.columns([2, 1, 2]) 
 
