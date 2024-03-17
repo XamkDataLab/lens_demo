@@ -6,23 +6,25 @@ from datanmuokkausfunktiot import *
 st.set_page_config(layout="wide")
 st.markdown("<h1 style='text-align: center;'>Datahaku patenteista ja julkaisuista</h1>", unsafe_allow_html=True)
 
-main_col1, main_col2 = st.columns([2, 3])
+main_row = st.columns([2, 1, 2]) 
 
-with main_col1:
+with main_row[0]:
     image_url = 'https://raw.githubusercontent.com/XamkDataLab/lens_demo/main/DALL.jpg'
     st.image(image_url)
 
-with main_col2:
+with main_row[1]:
     data_type = st.multiselect('Valitse tietokanta', ['Patentit', 'Julkaisut'], default=['Patentit', 'Julkaisut'])
     start_date = st.date_input('Alkaen', value=pd.to_datetime('2024-01-01'))
     end_date = st.date_input('Päättyen', value=pd.to_datetime('2024-03-01'))
-    class_cpc_prefix = st.text_input('CPC luokitus (voi jättää tyhjäksi)', '')
 
+with main_row[2]:
+    class_cpc_prefix = st.text_input('CPC luokitus (voi jättää tyhjäksi)', '')
     terms = st.text_area('Hakutermit (erota pilkulla, operaattori OR)', 
                         value='low carbon concrete, sustainable concrete, green concrete, eco concrete', 
                         height=300).split(',')
 
 token = st.secrets["mytoken"]
+
 
 if st.button('Hae Data'):
     try:
