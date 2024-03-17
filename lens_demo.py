@@ -8,29 +8,24 @@ st.markdown("<h1 style='text-align: center;'>Datahaku patenteista ja julkaisuist
 main_col1, main_col2 = st.columns([2, 2])
 
 with main_col1:
-    st.image("DALL.png")
+    image_url = 'https://raw.githubusercontent.com/XamkDataLab/lens_dome/main/DALL.jpg'
+    st.image(image_url)
 
 with main_col2:
-    # Adjust the proportion of the columns to give more space to the selectors
     col1, col2 = st.columns([2, 3])
 
     with col1:
-        # All selectors in the same column for more room
         data_type = st.multiselect('Valitse tietokanta', ['Patentit', 'Julkaisut'], default=['Patentit', 'Julkaisut'])
         start_date = st.date_input('Alkaen', value=pd.to_datetime('2024-01-01'))
         end_date = st.date_input('Päättyen', value=pd.to_datetime('2024-03-01'))
         class_cpc_prefix = st.text_input('CPC luokitus (voi jättää tyhjäksi)', '')
 
     with col2:
-        # Slightly narrower search terms box
         terms = st.text_area('Hakutermit (erota pilkulla, operaattori OR)', 
                              value='low carbon concrete, sustainable concrete, green concrete, eco concrete', 
                              height=300).split(',')
 
 token = st.secrets["mytoken"]
-
-
-
 
 if st.button('Hae Data'):
     try:
@@ -81,18 +76,13 @@ if st.button('Hae Data'):
                 publications_df = pd.DataFrame(publications_data)
                 publications_df['DOI'] = 'https://doi.org/'+publications_df['DOI']
                 publications_df = publications_df[['DOI', 'PDF URL', 'Publisher', 'Is Open Access']]
-                # Convert URLs to Markdown links
                 publications_df['DOI'] = publications_df['DOI'].apply(lambda x: f"[DOI]({x})")
                 publications_df['PDF URL'] = publications_df['PDF URL'].apply(lambda x: f"[PDF]({x})" if x else "")
 
-                
-                # Convert the DataFrame to a Markdown string
                 markdown_table = publications_df.to_markdown(index=False)
 
-                # Print the Markdown table string (or use st.markdown in a Streamlit app)
                 st.markdown(markdown_table)
                 
-                #st.dataframe(publications_df)  # Display the processed publication data as a DataFrame
             else:
                 st.write("No publication data fetched. Please check your inputs and try again.")
     except Exception as e:
