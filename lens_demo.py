@@ -51,7 +51,7 @@ if st.button('Hae Data'):
                         #'title': publication['title'],
                         'DOI': None,
                         #'OpenAlex': None,
-                        #'Publish date': publication['date_published,]
+                        'Publish date': publication['date_published,]
                         'PDF URL': None,
                         #'Other URL': None,
                         'Publisher': publication['source'].get('publisher', 'Not available'),  
