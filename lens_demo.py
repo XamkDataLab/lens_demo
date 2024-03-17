@@ -73,7 +73,7 @@ if st.button('Hae Data'):
                     publications_data.append(publication_info)
 
                 publications_df = pd.DataFrame(publications_data)
-                publications_df = publications_df.sort_values(by='Publish date', ascending=False)
+                #publications_df = publications_df.sort_values(by='Publish date', ascending=False)
                 publications_df['DOI'] = 'https://doi.org/'+publications_df['DOI']
                 publications_df = publications_df[['Publish date','DOI', 'PDF URL', 'Publisher', 'Is Open Access']]
                 publications_df['DOI'] = publications_df['DOI'].apply(lambda x: f"[DOI]({x})")
