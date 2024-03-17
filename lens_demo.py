@@ -82,7 +82,7 @@ if st.button('Hae Data'):
 
                 st.markdown(markdown_table)
                 st.write(publications_data)
-                
+                st.dataframe(publications_df)
             else:
                 st.write("No publication data fetched. Please check your inputs and try again.")
     except Exception as e:
