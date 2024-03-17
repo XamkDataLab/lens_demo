@@ -81,6 +81,7 @@ if st.button('Hae Data'):
                 markdown_table = publications_df.to_markdown(index=False)
 
                 st.markdown(markdown_table)
+                st.dataframe(publications_df)
                 
             else:
                 st.write("No publication data fetched. Please check your inputs and try again.")
