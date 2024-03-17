@@ -14,16 +14,16 @@ with main_col1:
 with main_col2:
     col1, col2 = st.columns([2, 3])
 
-    with col1:
-        data_type = st.multiselect('Valitse tietokanta', ['Patentit', 'Julkaisut'], default=['Patentit', 'Julkaisut'])
-        start_date = st.date_input('Alkaen', value=pd.to_datetime('2024-01-01'))
-        end_date = st.date_input('Päättyen', value=pd.to_datetime('2024-03-01'))
-        class_cpc_prefix = st.text_input('CPC luokitus (voi jättää tyhjäksi)', '')
+with col1:
+    data_type = st.multiselect('Valitse tietokanta', ['Patentit', 'Julkaisut'], default=['Patentit', 'Julkaisut'])
+    start_date = st.date_input('Alkaen', value=pd.to_datetime('2024-01-01'))
+    end_date = st.date_input('Päättyen', value=pd.to_datetime('2024-03-01'))
+    class_cpc_prefix = st.text_input('CPC luokitus (voi jättää tyhjäksi)', '')
 
-    with col2:
-        terms = st.text_area('Hakutermit (erota pilkulla, operaattori OR)', 
-                             value='low carbon concrete, sustainable concrete, green concrete, eco concrete', 
-                             height=300).split(',')
+with col2:
+    terms = st.text_area('Hakutermit (erota pilkulla, operaattori OR)', 
+                        value='low carbon concrete, sustainable concrete, green concrete, eco concrete', 
+                        height=300).split(',')
 
 token = st.secrets["mytoken"]
 
