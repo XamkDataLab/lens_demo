@@ -78,7 +78,7 @@ if st.button('Hae Data'):
                 publications_df['DOI'] = publications_df['DOI'].apply(lambda x: f"[DOI]({x})")
                 publications_df['PDF URL'] = publications_df['PDF URL'].apply(lambda x: f"[PDF]({x})" if x else "")
                 
-                publications_df['date_published'] = pd.to_datetime(publications_df['date_published'])
+                publications_df['Publish date'] = pd.to_datetime(publications_df['Publish date'])
                 #publications_df['formatted_date_published'] = publications_df['date_published'].dt.strftime('%Y-%m-%d')
                 markdown_table = publications_df.to_markdown(index=False)
 
