@@ -1,4 +1,6 @@
 import streamlit as st
+from hakufunktiot import *
+from datanmuokkausfunktiot import *
 
 st.set_page_config(layout="wide")
 st.markdown("<h1 style='text-align: center;'>Datahaku patenteista ja julkaisuista</h1>", unsafe_allow_html=True)
@@ -55,6 +57,7 @@ if st.button('Hae Data'):
                         #'title': publication['title'],
                         'DOI': None,
                         #'OpenAlex': None,
+                        #'Publish date': publication['date_published,]
                         'PDF URL': None,
                         #'Other URL': None,
                         'Publisher': publication['source'].get('publisher', 'Not available'),  
