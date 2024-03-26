@@ -23,6 +23,25 @@ with main_row[2]:
                         value='low carbon concrete, sustainable concrete, green concrete, eco concrete', 
                         height=300).split(',')
 
+st.subheader("Hae synonyymit ja läheiset termit")
+if st.button("Hae synonyymit"):
+    openai.api_key = st.secrets["openai_api_key"]
+    try:
+        for term in terms:
+            term = term.strip()
+            response = openai.Completion.create(
+                engine="gpt-4-0125-preview",
+                prompt=f"Give me synonyms or related keywords for: {term}",
+                max_tokens=100,
+                n=1,
+                stop=None,
+                temperature=0.5
+            )
+            synonyms = response.choices[0].text.strip()
+            st.write(f"**{term}**: {synonyms}")
+    except Exception as e:
+        st.error(f"An error occurred while fetching synonyms: {str(e)}")
+
 token = st.secrets["mytoken"]
 
 
