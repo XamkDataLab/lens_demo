@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import openai
 from hakufunktiot import *
 from datanmuokkausfunktiot import *
 
