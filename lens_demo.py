@@ -41,7 +41,7 @@ with main_row[1]:
 with main_row[2]:
     class_cpc_prefix = st.text_input('CPC-luokitus (patenteille, voi jättää tyhjäksi)', '')
     terms = st.text_area('Hakutermit (erota pilkulla, operaattori OR)', 
-                        value='low carbon concrete, sustainable concrete, green concrete, eco concrete', 
+                        value='low carbon concrete', 
                         height=300).split(',')
 
 if st.button("Get Synonyms for Provided Terms"):
