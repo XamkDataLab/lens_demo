@@ -4,6 +4,8 @@ from openai import OpenAI
 from hakufunktiot import *
 from datanmuokkausfunktiot import *
 
+client = OpenAI(api_key=st.secrets["openai_api_key"])
+
 def get_synonyms(term):
     try:
         chat_completion = client.chat.completions.create(
