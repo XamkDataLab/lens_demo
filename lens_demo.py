@@ -9,24 +9,18 @@ client = OpenAI(api_key=st.secrets["openai_api_key"])
 def get_synonyms(term):
     try:
         chat_completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
             messages=[
-                {
-                    "role": "system",
-                    "content": "You are a helpful assistant that provides synonyms for a given term."
-                },
                 {
                     "role": "user",
                     "content": f"What are synonyms or related terms for '{term}'?"
                 }
             ],
-            model="gpt-3.5-turbo",
         )
-    
-        if hasattr(chat_completion, 'choices') and chat_completion.choices:
+        if chat_completion.choices:
+            # Grab the content from the first choice's message
             response_content = chat_completion.choices[0].message['content']
             return response_content
-        else:
-            return "No response"
     except Exception as e:
         st.error(f"An error occurred while fetching synonyms: {str(e)}")
         return None
@@ -52,11 +46,13 @@ with main_row[2]:
                         height=300).split(',')
 
 if st.button("Get Synonyms"):
-    terms = [term.strip() for term in st.text_area("Enter terms separated by commas").split(',')]
-    for term in terms:
-        synonyms = get_synonyms(term)
-        if synonyms:
-            st.write(f"**{term}**: {synonyms}")
+    terms_input = st.text_area("Enter terms separated by commas")
+    if terms_input:  # Check if there's any input
+        terms = [term.strip() for term in terms_input.split(',')]
+        for term in terms:
+            synonyms = get_synonyms(term)
+            if synonyms:
+                st.write(f"**{term}**: {synonyms}")
 
 token = st.secrets["mytoken"]
 
