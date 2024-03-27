@@ -18,14 +18,12 @@ def get_synonyms(term):
             ],
         )
         if chat_completion.choices:
-            response_content = chat_completion.choices[0].message['content']
+            response_content = chat_completion.choices[0].message.content
             return response_content
-        else:
-            return "No response received."
     except Exception as e:
         st.error(f"An error occurred while fetching synonyms: {e}")
-        return None
-
+        return "Error fetching synonyms"
+        
 st.set_page_config(layout="wide")
 st.markdown("<h1 style='text-align: center;'>Datahaku patenteista ja julkaisuista</h1>", unsafe_allow_html=True)
 
