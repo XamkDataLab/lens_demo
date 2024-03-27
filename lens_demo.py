@@ -1,8 +1,28 @@
 import streamlit as st
 import pandas as pd
-import openai
+from openai import OpenAI
 from hakufunktiot import *
 from datanmuokkausfunktiot import *
+
+def get_synonyms(term):
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant."
+                },
+                {
+                    "role": "user",
+                    "content": f"Give me synonyms or related keywords for: '{term}'?"
+                }
+            ],
+            model="gpt-3.5-turbo",
+        )
+        return chat_completion['choices'][0]['message']['content']
+    except Exception as e:
+        st.error(f"An error occurred while fetching synonyms: {str(e)}")
+        return None
 
 st.set_page_config(layout="wide")
 st.markdown("<h1 style='text-align: center;'>Datahaku patenteista ja julkaisuista</h1>", unsafe_allow_html=True)
@@ -24,26 +44,12 @@ with main_row[2]:
                         value='low carbon concrete, sustainable concrete, green concrete, eco concrete', 
                         height=300).split(',')
 
-st.subheader("Get Synonyms for Search Terms")
 if st.button("Get Synonyms"):
-    openai.api_key = st.secrets["openai_api_key"]
-    try:
-        for term in terms:
-            term = term.strip()
-            response = openai.ChatCompletion.create(
-                model="gpt-4-0125-preview",
-                messages=[{
-                    "role": "system",
-                    "content": "You are a helpful assistant."
-                }, {
-                    "role": "user",
-                    "content": f"Give me synonyms or related keywords for: {term}"
-                }]
-            )
-            synonyms = response.choices[0].message['content']
+    terms = [term.strip() for term in st.text_area("Enter terms separated by commas").split(',')]
+    for term in terms:
+        synonyms = get_synonyms(term)
+        if synonyms:
             st.write(f"**{term}**: {synonyms}")
-    except Exception as e:
-        st.error(f"An error occurred while fetching synonyms: {str(e)}")
 
 token = st.secrets["mytoken"]
 
