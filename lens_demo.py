@@ -18,11 +18,12 @@ def get_synonyms(term):
             ],
         )
         if chat_completion.choices:
-            # Grab the content from the first choice's message
             response_content = chat_completion.choices[0].message['content']
             return response_content
+        else:
+            return "No response received."
     except Exception as e:
-        st.error(f"An error occurred while fetching synonyms: {str(e)}")
+        st.error(f"An error occurred while fetching synonyms: {e}")
         return None
 
 st.set_page_config(layout="wide")
@@ -45,14 +46,16 @@ with main_row[2]:
                         value='low carbon concrete, sustainable concrete, green concrete, eco concrete', 
                         height=300).split(',')
 
-if st.button("Get Synonyms"):
-    terms_input = st.text_area("Enter terms separated by commas")
-    if terms_input:  # Check if there's any input
-        terms = [term.strip() for term in terms_input.split(',')]
+if st.button("Get Synonyms for Provided Terms"):
+    if terms: 
         for term in terms:
-            synonyms = get_synonyms(term)
+            synonyms = get_synonyms(term.strip())
             if synonyms:
                 st.write(f"**{term}**: {synonyms}")
+            else:
+                st.write(f"**{term}**: No synonyms found.")
+    else:
+        st.write("No terms provided.")
 
 token = st.secrets["mytoken"]
 
