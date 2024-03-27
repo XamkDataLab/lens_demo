@@ -12,16 +12,21 @@ def get_synonyms(term):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a helpful assistant."
+                    "content": "You are a helpful assistant that provides synonyms for a given term."
                 },
                 {
                     "role": "user",
-                    "content": f"Give me synonyms or related keywords for: '{term}'?"
+                    "content": f"What are synonyms or related terms for '{term}'?"
                 }
             ],
             model="gpt-3.5-turbo",
         )
-        return chat_completion['choices'][0]['message']['content']
+    
+        if hasattr(chat_completion, 'choices') and chat_completion.choices:
+            response_content = chat_completion.choices[0].message['content']
+            return response_content
+        else:
+            return "No response"
     except Exception as e:
         st.error(f"An error occurred while fetching synonyms: {str(e)}")
         return None
