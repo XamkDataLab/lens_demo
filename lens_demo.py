@@ -24,21 +24,23 @@ with main_row[2]:
                         value='low carbon concrete, sustainable concrete, green concrete, eco concrete', 
                         height=300).split(',')
 
-st.subheader("Hae synonyymit ja läheiset termit")
-if st.button("Hae synonyymit"):
+st.subheader("Get Synonyms for Search Terms")
+if st.button("Get Synonyms"):
     openai.api_key = st.secrets["openai_api_key"]
     try:
         for term in terms:
             term = term.strip()
-            response = openai.Completion.create(
-                engine="gpt-4-0125-preview",
-                prompt=f"Give me synonyms or related keywords for: {term}",
-                max_tokens=100,
-                n=1,
-                stop=None,
-                temperature=0.5
+            response = openai.ChatCompletion.create(
+                model="gpt-4-0125-preview",
+                messages=[{
+                    "role": "system",
+                    "content": "You are a helpful assistant."
+                }, {
+                    "role": "user",
+                    "content": f"Give me synonyms or related keywords for: {term}"
+                }]
             )
-            synonyms = response.choices[0].text.strip()
+            synonyms = response.choices[0].message['content']
             st.write(f"**{term}**: {synonyms}")
     except Exception as e:
         st.error(f"An error occurred while fetching synonyms: {str(e)}")
