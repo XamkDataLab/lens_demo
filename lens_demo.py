@@ -13,7 +13,7 @@ def get_synonyms(term):
             messages=[
                 {
                     "role": "user",
-                    "content": f"What are synonyms or related terms for '{term}'?"
+                    "content": f"List related search terms and/or synonyms for this searc term: '{term}'?"
                 }
             ],
         )
