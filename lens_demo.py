@@ -9,7 +9,7 @@ client = OpenAI(api_key=st.secrets["openai_api_key"])
 def get_synonyms(term):
     try:
         chat_completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4-0125-preview",
             messages=[
                 {
                     "role": "user",
