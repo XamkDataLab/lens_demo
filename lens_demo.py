@@ -3,6 +3,7 @@ import pandas as pd
 from openai import OpenAI
 from hakufunktiot import *
 from datanmuokkausfunktiot import *
+import plotly.graph_objs as go
 
 client = OpenAI(api_key=st.secrets["openai_api_key"])
 
@@ -23,14 +24,40 @@ def get_synonyms(term):
     except Exception as e:
         st.error(f"An error occurred while fetching synonyms: {e}")
         return "Error fetching synonyms"
-        
+
+def create_sankey(df, group_descriptions):
+   
+    filtered_df = df[df['Group Description'].isin(group_descriptions)]
+    all_nodes = filtered_df['Group Description'].tolist() + filtered_df['Subgroup Description'].tolist()
+    all_nodes = list(dict.fromkeys(all_nodes)) 
+    
+    node_indices = {node: i for i, node in enumerate(all_nodes)}
+    source_indices = [node_indices[group] for group in filtered_df['Group Description']]
+    target_indices = [node_indices[subgroup] for subgroup in filtered_df['Subgroup Description']]
+    
+    values = filtered_df.groupby(['Group Description', 'Subgroup Description']).size().tolist()
+    
+    sankey = go.Figure(data=[go.Sankey(
+        node=dict(
+            pad=15,
+            thickness=20,
+            line=dict(color="black", width=0.5),
+            label=all_nodes,
+        ),
+        link=dict(
+            source=source_indices,
+            target=target_indices,
+            value=values
+        ))])
+    
+    return sankey
+
 st.set_page_config(layout="wide")
 st.markdown("<h1 style='text-align: center;'>Datahaku patenteista ja julkaisuista</h1>", unsafe_allow_html=True)
-
 main_row = st.columns([2, 1, 2]) 
 
 with main_row[0]:
-    image_url = 'https://raw.githubusercontent.com/XamkDataLab/lens_demo/main/DALL.jpg'
+    image_url = 'https://raw.githubusercontent.com/XamkDataLab/lens_demo/main/DALL2.jpg'
     st.image(image_url)
 
 with main_row[1]:
@@ -41,7 +68,7 @@ with main_row[1]:
 with main_row[2]:
     class_cpc_prefix = st.text_input('CPC-luokitus (patenteille, voi jättää tyhjäksi)', '')
     terms = st.text_area('Hakutermit (erota pilkulla, operaattori OR)', 
-                        value='low carbon concrete', 
+                        value='', 
                         height=300).split(',')
 
 if st.button("Get Synonyms for Provided Terms"):
@@ -61,62 +88,58 @@ token = st.secrets["mytoken"]
 if st.button('Hae Data'):
     try:
         if 'Patentit' in data_type:
-            patent_data = get_patent_data(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), [term.strip() for term in terms], token, class_cpc_prefix or None)
-            if patent_data:
-                st.write(f"Löytyi {len(patent_data)} patenttia")
-                p = patents_table(patent_data)
-
+            st.session_state['patent_data'] = get_patent_data(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), [term.strip() for term in terms], token, class_cpc_prefix or None)
+            if st.session_state['patent_data']:
+                st.write(f"Löytyi {len(st.session_state['patent_data'])} patenttia")
+                p = patents_table(st.session_state['patent_data'])
+                c = cpc_classifications_table(st.session_state['patent_data'])
+                a = applicants_table(st.session_state['patent_data'])
+                st.session_state['c'] = make_cpc(c, 'cpc_ultimate_titles.json')
+                st.dataframe(p)
+                st.dataframe(st.session_state['c'])
+                
             else:
                 st.write("No patent data fetched. Please check your inputs and try again.")
 
         if 'Julkaisut' in data_type:
-            publication_data = get_publication_data(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), [term.strip() for term in terms], token)
-            if publication_data and publication_data['data']:  
-                st.write(f"Löytyi {publication_data['total']} julkaisua")
+            st.session_state['publication_data'] = get_publication_data(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), [term.strip() for term in terms], token)
+            if st.session_state['publication_data'] and st.session_state['publication_data']['data']:  
+                st.write(f"Löytyi {st.session_state['publication_data']['total']} julkaisua")
                 
                 publications_data = []
 
-                
-                for publication in publication_data['data']:
+                for publication in st.session_state['publication_data']['data']:
                     source_publisher = publication.get('source', {}).get('publisher', 'Not available') if publication.get('source') else 'Not available'
                     publication_info = {
-                        #'lens_id': publication['lens_id'],
-                        #'title': publication['title'],
-                        'DOI': None,
-                        #'OpenAlex': None,
                         'Publish date': publication['date_published'].split('T')[0],
-                        'PDF URL': None,
-                        #'Other URL': None,
                         'Publisher': source_publisher,  
                         'Is Open Access': publication.get('is_open_access', False)  
                     }
 
-                    for external_id in publication.get('external_ids', []):
-                        if external_id['type'] == 'doi':
-                            publication_info['DOI'] = external_id['value']
-                        elif external_id['type'] == 'openalex':
-                            publication_info['OpenAlex'] = external_id['value']
+                    if 'doi' in publication.get('external_ids', {}):
+                        publication_info['DOI'] = 'https://doi.org/' + publication['external_ids']['doi']
 
-                    for source_url in publication.get('source_urls', []):
-                        if source_url['type'] == 'pdf':
-                            publication_info['PDF URL'] = source_url['url']
-                        else:  
-                            publication_info['Other URL'] = source_url['url']
+                    if 'pdf' in publication.get('source_urls', {}):
+                        publication_info['PDF URL'] = f"[PDF]({publication['source_urls']['pdf']})"
+                    else:
+                        publication_info['PDF URL'] = ""
 
                     publications_data.append(publication_info)
 
                 publications_df = pd.DataFrame(publications_data)
-                #publications_df = publications_df.sort_values(by='Publish date', ascending=False)
-                publications_df['DOI'] = 'https://doi.org/'+publications_df['DOI']
-                publications_df = publications_df[['Publish date','DOI', 'PDF URL', 'Publisher', 'Is Open Access']]
-                publications_df['DOI'] = publications_df['DOI'].apply(lambda x: f"[DOI]({x})")
-                publications_df['PDF URL'] = publications_df['PDF URL'].apply(lambda x: f"[PDF]({x})" if x else "")
+                publications_df = publications_df[['Publish date', 'DOI', 'PDF URL', 'Publisher', 'Is Open Access']]
                 
                 markdown_table = publications_df.to_markdown(index=False)
-
                 st.markdown(markdown_table)
     
             else:
                 st.write("No publication data fetched. Please check your inputs and try again.")
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
+
+if 'c' in st.session_state:
+    group_descriptions = st.multiselect('Select Group Descriptions', options=st.session_state['c']['Group Description'].unique(), key='group_selection')
+    if group_descriptions:
+        if st.button("Show Sankey Diagram"):
+            sankey_figure = create_sankey(st.session_state['c'], group_descriptions)
+            st.plotly_chart(sankey_figure)
